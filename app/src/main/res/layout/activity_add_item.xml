@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="jobson.elliott.homeassettracker.AddItemActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Item Information:"
+        android:textSize="24sp"/>
+
+    <EditText
+        android:id="@+id/name_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name"/>
+
+    <EditText
+        android:id="@+id/description_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"/>
+
+    <EditText
+        android:id="@+id/cost_id"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cost"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Item Purchase Date"
+            android:textSize="14sp"
+            android:onClick="showDatePickerDialog"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Chosen: None"
+            android:id="@+id/date_id"
+            />
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/photo_name_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Photo Name"
+    />
+
+    <EditText
+        android:id="@+id/receipt_photo_name_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Receipt Photo Name"
+        />
+    
+    <EditText
+        android:id="@+id/warranty_length_id"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Warranty Length (years)"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Item"
+        android:onClick="addItem"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Return to Main"
+        android:onClick="returnToMain"/>
+
+</LinearLayout>
