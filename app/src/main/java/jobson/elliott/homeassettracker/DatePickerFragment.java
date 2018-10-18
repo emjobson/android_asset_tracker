@@ -15,8 +15,19 @@ import java.util.Calendar;
  * Code from: https://developer.android.com/guide/topics/ui/controls/pickers
  */
 
-public class DatePickerFragment extends DialogFragment // TODO: make static once again?
+public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
+
+    private String selectedDate;
+
+    public DatePickerFragment() {
+        super();
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        selectedDate = intDateToString(year, month, day); // defaults to current date for TextView
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -24,15 +35,20 @@ public class DatePickerFragment extends DialogFragment // TODO: make static once
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH); // for default date of datePicker
 
         // Create a new instance of DatePickerDialog and return it
         return new DatePickerDialog(getActivity(), this, year, month, day);
     }
 
-    public void onDateSet(DatePicker view, int year, int month, int day) {
+    public String getDate() { return this.selectedDate; }
 
-        // Do something with the date chosen by the user
+    /*
+     * Private helper method takes in integer representations of the date, returning it as an
+     * 8-digit string in the form mmddyyyy.
+     */
+    private String intDateToString(int year, int month, int day) {
+
         String monthStr = Integer.toString(month+1); // months were 0-indexed
         monthStr = monthStr.length() == 1 ? "0" + monthStr : monthStr;
         String dayStr = Integer.toString(day);
@@ -40,10 +56,29 @@ public class DatePickerFragment extends DialogFragment // TODO: make static once
         String yearStr = Integer.toString(year); // assuming length of all years is 4
         String date = monthStr + dayStr + yearStr;
 
-        Singleton.getInstance().setPurchaseDate(date);
+        return date;
+    }
+
+    /*
+     * Private helper method takes in a String date in the form mmddyyyy, and returns
+     * a separated version of the form mm<sep>dd<sep>yyyy.
+     */
+    protected static String addDateSeparators(String date, String separator) {
+        return date.substring(0,2) + separator + date.substring(2,4) + separator + date.substring(4);
+    }
+
+    public void onDateSet(DatePicker view, int year, int month, int day) {
+
+        // Do something with the date chosen by the user
+        String date = intDateToString(year, month, day);
+
+    //    Singleton.getInstance().setPurchaseDate(date);
+        selectedDate = date;
+
+        String separatedDate = addDateSeparators(date, "/");
 
         TextView dateText = getActivity().findViewById(R.id.date_id);
-        dateText.setText("Date Chosen: " + monthStr + "/" + dayStr + "/" + yearStr);
+        dateText.setText("Date Chosen: " + separatedDate);
 
     }
 }

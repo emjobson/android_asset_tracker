@@ -210,7 +210,6 @@ public class ViewItemActivity extends AppCompatActivity {
 
     }
 
-
     // TODO: write this
     public void deleteCurrentClicked(View view) {
 

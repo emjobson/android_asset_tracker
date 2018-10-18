@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 public class AddItemActivity extends AppCompatActivity {
 
     private Singleton singleton;
+    private DatePickerFragment datePicker;
 
 
     @Override
@@ -25,13 +27,29 @@ public class AddItemActivity extends AppCompatActivity {
 
         singleton = Singleton.getInstance();
         // upon opening page, zero out purchase date
-        singleton.setPurchaseDate("");
+    //    singleton.setPurchaseDate("");
+        dateInit();
+    }
+
+    /*
+     * Private helper method called upon opening the add view. Initializes the datePicker,
+     * and indicates that the default date selected is the current date by updating the relevant
+     * TextView.
+     */
+    private void dateInit() {
+
+        datePicker = new DatePickerFragment();
+        String date = datePicker.getDate();
+        String separatedDate = DatePickerFragment.addDateSeparators(date, "/");
+        TextView dateText = findViewById(R.id.date_id);
+
+        dateText.setText("Date Chosen: " + separatedDate);
     }
 
     // https://stackoverflow.com/questions/27514338/cannot-resolve-method-showandroid-support-v4-app-fragmentmanager-java-lang-st
     public void showDatePickerDialog (View view) {
-        DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(getFragmentManager(), "datePicker");
+    //    DialogFragment newFragment = new DatePickerFragment();
+        datePicker.show(getFragmentManager(), "datePicker");
     }
 
     /*
@@ -55,7 +73,10 @@ public class AddItemActivity extends AppCompatActivity {
         String name = editName.getText().toString();
         String description = editDescription.getText().toString();
         String cost = editCost.getText().toString();
-        String purchaseDate = singleton.getPurchaseDate();
+
+    //    String purchaseDate = singleton.getPurchaseDate();
+        String purchaseDate = datePicker.getDate();
+
         String photoName = editPhotoName.getText().toString();
         String receiptPhotoName = editReceipt.getText().toString();
         String warrantyLength = editWarranty.getText().toString();
