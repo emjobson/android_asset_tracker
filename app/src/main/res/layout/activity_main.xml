@@ -22,34 +22,19 @@
         android:text="Add Item"
         android:onClick="addItemScreen"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current Item:"
-            android:textSize="24sp"/>
-
-        <Spinner
-            android:id="@+id/item_name_spinner"
-            android:layout_width="238dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-        </Spinner>
-
-    </LinearLayout>
-
-
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="View Item"
+        android:text="View Items"
         android:onClick="viewItemScreen"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Reset"
+        android:onClick="resetButtonClicked"/>
 
 </LinearLayout>

@@ -4,10 +4,12 @@ import android.app.DialogFragment;
 //import android.support.v4.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -15,13 +17,6 @@ public class AddItemActivity extends AppCompatActivity {
 
     private Singleton singleton;
 
-    private static final int NAME = 0;
-    private static final int DESCRIPTION = 1;
-    private static final int COST = 2;
-    private static final int PURCHASE_DATE = 3;
-    private static final int PHOTO_NAME = 4;
-    private static final int RECEIPT_PHOTO_NAME = 5;
-    private static final int WARRANTY_LENGTH = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +38,8 @@ public class AddItemActivity extends AppCompatActivity {
      * Private helper method gathers the user's input from the EditTexts views and the
      * purchase date from the singleton, placing the data as strings into an arraylist.
      * Returns this list of user inputs.
+     *
+     * EditTextViews --> array<string> representation of item
      */
     private ArrayList<String> getItemInfo() {
 
@@ -85,7 +82,7 @@ public class AddItemActivity extends AppCompatActivity {
      */
     private boolean itemValid(ArrayList<String> itemInfo) {
 
-        String name = itemInfo.get(NAME);
+        String name = itemInfo.get(Asset.NAME);
         if (name == null || name.isEmpty()) {
             return false;
         }
@@ -98,26 +95,62 @@ public class AddItemActivity extends AppCompatActivity {
         return true;
     }
 
+    private String constructDBInsertString(ArrayList<String> itemInfo) {
+        String ret = "INSERT INTO assets VALUES";
+        ret += "('" + itemInfo.get(Asset.NAME)
+                + "','" + itemInfo.get(Asset.DESCRIPTION)
+                + "'," + Float.parseFloat(itemInfo.get(Asset.COST))
+                + "," + Integer.parseInt(itemInfo.get(Asset.PURCHASE_DATE))
+                + ",'" + itemInfo.get(Asset.PHOTO_NAME)
+                + "','" +  itemInfo.get(Asset.RECEIPT_PHOTO_NAME)
+                + "'," + Float.parseFloat(itemInfo.get(Asset.WARRANTY_LENGTH)) + ");";
+
+        return ret;
+    }
+
+
+    /*
+     * Private helper method take in an ArrayList string representation of the item to add and updates
+     * our Singleton's database.
+     *
+     * The actual initialization and storage of the Asset objects will occur in ViewItemActivity.
+     * ViewItemActivity, upon opening, will check the Singleton assetsModified flag to determine
+     * whether or not to re-sync with the database.
+     */
+    private void addItemToDB(ArrayList<String> itemInfo) {
+
+        Toast addToast = Toast.makeText(getApplicationContext(), "Item Added", Toast.LENGTH_SHORT);
+        addToast.show();
+
+        String insertString = constructDBInsertString(itemInfo);
+        singleton.getDB().execSQL(insertString);
+        singleton.setAssetsModified(true);
+
+    }
+
+
     /*
      * Button handler. Checks user-inputted fields for item validity.
      * Adds item if all fields have been filled out and item otherwise valid (TODO: determine what this means).
      */
-    public void addItem(View view) {
+    public void addItemClicked(View view) {
 
         ArrayList<String> itemInfo = getItemInfo();
 
-
         if (itemValid(itemInfo)) {
+            addItemToDB(itemInfo);
 
         } else {
-
+            // TODO: make message more specific
+            Toast invalidToast = Toast.makeText(getApplicationContext(), "Item Invalid", Toast.LENGTH_SHORT);
+            invalidToast.show();
         }
     }
 
     /*
      * Button handler. Takes user to main page.
      */
-    public void returnToMain(View view) {
+    public void returnToMainClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

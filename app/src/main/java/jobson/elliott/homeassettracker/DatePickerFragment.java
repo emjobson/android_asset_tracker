@@ -3,8 +3,10 @@ package jobson.elliott.homeassettracker;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 import java.util.Calendar;
 
@@ -37,8 +39,12 @@ public class DatePickerFragment extends DialogFragment // TODO: make static once
         dayStr = dayStr.length() == 1 ? "0" + dayStr : dayStr;
 
         // NOTE: currently assuming length of all years is 4
-        String date = monthStr + dayStr + Integer.toString(year);
+        String yearStr = Integer.toString(year);
+        String date = monthStr + dayStr + yearStr;
         Singleton.getInstance().setPurchaseDate(date);
-        System.out.println("date set: " + date);
+
+        TextView dateText = getActivity().findViewById(R.id.date_id);
+        dateText.setText("Date Chosen: " + monthStr + "/" + dayStr + "/" + yearStr);
+
     }
 }

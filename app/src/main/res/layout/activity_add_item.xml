@@ -79,12 +79,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Item"
-        android:onClick="addItem"/>
+        android:onClick="addItemClicked"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Return to Main"
-        android:onClick="returnToMain"/>
+        android:onClick="returnToMainClicked"/>
 
 </LinearLayout>
