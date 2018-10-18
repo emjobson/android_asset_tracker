@@ -47,7 +47,7 @@ public class ViewItemActivity extends AppCompatActivity {
      * Protected method
      */
     private void init() {
-
+        System.out.println("view item's init() method called");
         singleton = Singleton.getInstance();
         itemSpinner = findViewById(R.id.item_name_spinner);
         itemNames = new ArrayList<String>();
@@ -131,29 +131,29 @@ public class ViewItemActivity extends AppCompatActivity {
     */
     private void setupItemSpinner() {
 
-        /*
+        SpinnerAdapter adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, itemNames);
+        itemSpinner.setAdapter(adapter);
+
         // set singleton when item selected
         itemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            int count = 0; // don't want this called during onCreate
+            /*
+             * got rid of count, so we're allowing it to be called onCreate
+             * this is fine, since onItemSelected not registered when you click on
+             * the initially-selected item anyways
+             */
+
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (count >= 1) {
-                    String item = itemSpinner.getSelectedItem().toString();
-                    singleton.setCurrentItem(item);
-                }
-                count++;
+                    displayClickedTextVersion();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
+                // TODO: zero out display
             }
         });
-        */
 
-        SpinnerAdapter adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, itemNames);
-        itemSpinner.setAdapter(adapter);
     }
 
 
@@ -210,9 +210,6 @@ public class ViewItemActivity extends AppCompatActivity {
 
     }
 
-    public void displayAssetClicked(View view) {
-        displayClickedTextVersion();
-    }
 
     // TODO: write this
     public void deleteCurrentClicked(View view) {
