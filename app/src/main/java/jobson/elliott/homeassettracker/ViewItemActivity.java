@@ -108,9 +108,8 @@ public class ViewItemActivity extends AppCompatActivity {
             ArrayList<String> params = new ArrayList<String>(); // setup params
             String name = c.getString(0);
             for (int i = 0; i < Asset.NUM_FIELDS; i++) {
-                if (i == Asset.PURCHASE_DATE) {
-                    params.add(Integer.toString(c.getInt(i)));
-                } else if (i == Asset.RECEIPT_PHOTO_NAME || i == Asset.WARRANTY_LENGTH) {
+
+                if (i == Asset.COST || i == Asset.WARRANTY_LENGTH) {
                     params.add(Float.toString(c.getFloat(i)));
                 } else {
                     params.add(c.getString(i));
@@ -176,13 +175,16 @@ public class ViewItemActivity extends AppCompatActivity {
     private void displayClickedTextVersion() {
 
         Spinner sp = findViewById(R.id.item_name_spinner);
-        String curAssetName = sp.getSelectedItem().toString();
 
-        if (curAssetName == null) {
+        if (sp.getSelectedItem() == null) {
+
             Toast invalidToast = Toast.makeText(getApplicationContext(), "No item selected to display.", Toast.LENGTH_SHORT);
             invalidToast.show();
 
         } else {
+
+            String curAssetName = sp.getSelectedItem().toString();
+            System.out.println("printing current asset: " + curAssetName);
 
             TextView curItem = findViewById(R.id.curItem);
             TextView curDescription = findViewById(R.id.curDescription);
@@ -197,18 +199,28 @@ public class ViewItemActivity extends AppCompatActivity {
             curDescription.setText("Description: " + asset.getDescription());
             curPhotoName.setText("Photo Name: " + asset.getPhotoName());
 
-            String dateStr = Integer.toString(asset.getPurchaseDate());
+            String dateStr = asset.getPurchaseDate();
             // TODO: fix date formatting
             String dateText = dateStr.substring(0,2) + "/" + dateStr.substring(2,4) + "/" + dateStr.substring(4);
             curPurchaseDate.setText("Purchase Date: " + dateText);
             curReceiptPhotoName.setText("Receipt Photo Name: " + asset.getReceiptPhotoName());
-            curCost.setText("Cost: " + Float.toString(asset.getCost()));
-            curWarrantyLength.setText("Warranty Length: " + Float.toString(asset.getWarrantyLength()));
+            curCost.setText("Cost: $" + Float.toString(asset.getCost()));
+            curWarrantyLength.setText("Warranty Length: " + Float.toString(asset.getWarrantyLength()) + " years");
         }
 
     }
 
     public void displayAssetClicked(View view) {
         displayClickedTextVersion();
+    }
+
+    // TODO: write this
+    public void deleteCurrentClicked(View view) {
+
+    }
+
+    // TODO: write this
+    public void editCurrentClicked(View view) {
+
     }
 }

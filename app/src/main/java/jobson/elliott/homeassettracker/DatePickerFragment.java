@@ -31,16 +31,15 @@ public class DatePickerFragment extends DialogFragment // TODO: make static once
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        // Do something with the date chosen by the user
-        String monthStr = Integer.toString(month);
-        monthStr = monthStr.length() == 1 ? "0" + monthStr : monthStr;
 
+        // Do something with the date chosen by the user
+        String monthStr = Integer.toString(month+1); // months were 0-indexed
+        monthStr = monthStr.length() == 1 ? "0" + monthStr : monthStr;
         String dayStr = Integer.toString(day);
         dayStr = dayStr.length() == 1 ? "0" + dayStr : dayStr;
-
-        // NOTE: currently assuming length of all years is 4
-        String yearStr = Integer.toString(year);
+        String yearStr = Integer.toString(year); // assuming length of all years is 4
         String date = monthStr + dayStr + yearStr;
+
         Singleton.getInstance().setPurchaseDate(date);
 
         TextView dateText = getActivity().findViewById(R.id.date_id);

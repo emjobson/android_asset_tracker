@@ -13,7 +13,7 @@ public class Asset {
     private String name;
     private String description;
     private String photoName;
-    private int purchaseDate;
+    private String purchaseDate;
     private String receiptPhotoName;
     private float cost;
     private float warrantyLength;
@@ -27,7 +27,7 @@ public class Asset {
     protected static final int WARRANTY_LENGTH = 6;
     protected static final int NUM_FIELDS = 7;
 
-    public Asset(String name, String description, String photoName, int purchaseDate,
+    public Asset(String name, String description, String photoName, String purchaseDate,
                  String receiptPhotoName, float cost, float warrantyLength) {
 
         this.name = name;
@@ -48,7 +48,7 @@ public class Asset {
         this.name = params.get(NAME);
         this.description = params.get(DESCRIPTION);
         this.photoName = params.get(PHOTO_NAME);
-        this.purchaseDate = Integer.parseInt(params.get(PURCHASE_DATE));
+        this.purchaseDate = params.get(PURCHASE_DATE);
         this.receiptPhotoName = params.get(RECEIPT_PHOTO_NAME);
         this.cost = Float.parseFloat(params.get(COST));
         this.warrantyLength = Float.parseFloat(params.get(WARRANTY_LENGTH));
@@ -64,7 +64,7 @@ public class Asset {
     public String getName() { return name; }
     public String getDescription() { return description; }
     public String getPhotoName() { return photoName; }
-    public int getPurchaseDate() { return purchaseDate; }
+    public String getPurchaseDate() { return purchaseDate; }
     public String getReceiptPhotoName() { return receiptPhotoName; }
     public float getCost() { return cost; }
     public float getWarrantyLength() { return warrantyLength; }

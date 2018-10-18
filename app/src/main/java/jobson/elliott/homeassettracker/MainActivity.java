@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupAssetTable() {
         String setupStr = "CREATE TABLE assets ("
                 + "itemName TEXT, description TEXT, cost REAL, "
-                + "purchaseDate INT, photoName TEXT, receiptPhotoName TEXT, "
+                + "purchaseDate TEXT, photoName TEXT, receiptPhotoName TEXT, "
                 + "warrantyLength REAL);";
         singleton.getDB().execSQL(setupStr);
     }

@@ -24,7 +24,7 @@ public class AddItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_item);
 
         singleton = Singleton.getInstance();
-        // upon opening page, need to zero out purchase date
+        // upon opening page, zero out purchase date
         singleton.setPurchaseDate("");
     }
 
@@ -100,10 +100,12 @@ public class AddItemActivity extends AppCompatActivity {
         ret += "('" + itemInfo.get(Asset.NAME)
                 + "','" + itemInfo.get(Asset.DESCRIPTION)
                 + "'," + Float.parseFloat(itemInfo.get(Asset.COST))
-                + "," + Integer.parseInt(itemInfo.get(Asset.PURCHASE_DATE))
-                + ",'" + itemInfo.get(Asset.PHOTO_NAME)
+                + ",'" + itemInfo.get(Asset.PURCHASE_DATE)
+                + "','" + itemInfo.get(Asset.PHOTO_NAME)
                 + "','" +  itemInfo.get(Asset.RECEIPT_PHOTO_NAME)
                 + "'," + Float.parseFloat(itemInfo.get(Asset.WARRANTY_LENGTH)) + ");";
+
+        System.out.println("db string (add): " + ret);
 
         return ret;
     }
