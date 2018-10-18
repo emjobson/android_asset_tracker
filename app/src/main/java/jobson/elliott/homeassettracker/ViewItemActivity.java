@@ -31,23 +31,11 @@ public class ViewItemActivity extends AppCompatActivity {
         init();
     }
 
-    /*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        System.out.println("on resume called!");
-        if (singleton.areAssetsModified()) {
-            System.out.println("assets modified, so syncing with DB");
-            syncWithDB();
-        }
-    }
-    */
 
     /*
      * Protected method
      */
     private void init() {
-        System.out.println("view item's init() method called");
         singleton = Singleton.getInstance();
         itemSpinner = findViewById(R.id.item_name_spinner);
         itemNames = new ArrayList<String>();
@@ -61,7 +49,7 @@ public class ViewItemActivity extends AppCompatActivity {
      * Protected method updates itemNames and the assetMap. Called upon initialization of the
      * app and when items are added in AddItemActivity.
      *
-     * Update itemNames, update assetMap, set assets modified flag to false.
+     * Updates itemNames and updates assetMap.
      */
     public void syncWithDB() {
 
@@ -71,14 +59,13 @@ public class ViewItemActivity extends AppCompatActivity {
 
         try {
             while (c.moveToNext()) {
-                itemNames.add(c.getString(Asset.NAME)); // TODO: might be 0 as innermost arg
+                itemNames.add(c.getString(Asset.NAME));
             }
         } finally {
             c.close();
         }
 
         getAssetsFromDB();
-        singleton.setAssetsModified(false);
 
     }
 
@@ -105,7 +92,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
         while (c.moveToNext()) {
 
-            ArrayList<String> params = new ArrayList<String>(); // setup params
+            ArrayList<String> params = new ArrayList<String>();
             String name = c.getString(0);
             for (int i = 0; i < Asset.NUM_FIELDS; i++) {
 
@@ -124,6 +111,16 @@ public class ViewItemActivity extends AppCompatActivity {
     }
 
     /*
+     * Helper method to connect spinner to arraylist. Called during setup, erase, and delete
+     * to make sure the spinner displays the current items.
+     */
+    private void connectSpinnerToList() {
+        SpinnerAdapter adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, itemNames);
+        itemSpinner.setAdapter(adapter);
+    }
+
+    /*
     * Private helper method sets the itemSpinner's onSelected to store the selected item
     * in our singleton, and links the item names with the spinner.
     * Called upon app initialization.
@@ -131,9 +128,7 @@ public class ViewItemActivity extends AppCompatActivity {
     */
     private void setupItemSpinner() {
 
-        SpinnerAdapter adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, itemNames);
-        itemSpinner.setAdapter(adapter);
+        connectSpinnerToList();
 
         // set singleton when item selected
         itemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -182,36 +177,92 @@ public class ViewItemActivity extends AppCompatActivity {
             invalidToast.show();
 
         } else {
-
             String curAssetName = sp.getSelectedItem().toString();
-            System.out.println("printing current asset: " + curAssetName);
-
-            TextView curItem = findViewById(R.id.curItem);
-            TextView curDescription = findViewById(R.id.curDescription);
-            TextView curPhotoName = findViewById(R.id.curPhotoName);
-            TextView curPurchaseDate = findViewById(R.id.curPurchaseDate);
-            TextView curReceiptPhotoName = findViewById(R.id.curReceiptPhotoName);
-            TextView curCost = findViewById(R.id.curCost);
-            TextView curWarrantyLength = findViewById(R.id.curWarrantyLength);
-
-            Asset asset = assetMap.get(curAssetName);
-            curItem.setText("Item: " + asset.getName());
-            curDescription.setText("Description: " + asset.getDescription());
-            curPhotoName.setText("Photo Name: " + asset.getPhotoName());
-
-            String dateStr = asset.getPurchaseDate();
-            // TODO: fix date formatting
-            String dateText = dateStr.substring(0,2) + "/" + dateStr.substring(2,4) + "/" + dateStr.substring(4);
-            curPurchaseDate.setText("Purchase Date: " + dateText);
-            curReceiptPhotoName.setText("Receipt Photo Name: " + asset.getReceiptPhotoName());
-            curCost.setText("Cost: $" + Float.toString(asset.getCost()));
-            curWarrantyLength.setText("Warranty Length: " + Float.toString(asset.getWarrantyLength()) + " years");
+            updateDisplayText(curAssetName);
         }
-
     }
 
-    // TODO: write this
-    public void deleteCurrentClicked(View view) {
+    /*
+     * Private helper called when there's an asset selected and we need to update the UI's text
+     * display. Takes in the current asset's name and updates the display.
+     *
+     * Inputting the empty string will trigger the default, empty display.
+     */
+    private void updateDisplayText(String curAssetName) {
+
+        String name, description, photoName, date, receipt, cost, warrantyLength;
+        name = description = photoName = date = receipt = cost = warrantyLength = "";
+
+        TextView curItem = findViewById(R.id.curItem);
+        TextView curDescription = findViewById(R.id.curDescription);
+        TextView curPhotoName = findViewById(R.id.curPhotoName);
+        TextView curPurchaseDate = findViewById(R.id.curPurchaseDate);
+        TextView curReceiptPhotoName = findViewById(R.id.curReceiptPhotoName);
+        TextView curCost = findViewById(R.id.curCost);
+        TextView curWarrantyLength = findViewById(R.id.curWarrantyLength);
+
+        if (!curAssetName.isEmpty()) {
+
+            Asset asset = assetMap.get(curAssetName);
+            name = asset.getName();
+            description = asset.getDescription();
+            photoName = asset.getPhotoName();
+            date = DatePickerFragment.addDateSeparators(asset.getPurchaseDate(), "/");
+            receipt = asset.getReceiptPhotoName();
+            cost = Float.toString(asset.getCost());
+            warrantyLength = Float.toString(asset.getWarrantyLength());
+        }
+
+        curItem.setText("Item: " + name);
+        curDescription.setText("Description: " + description);
+        curPhotoName.setText("Photo Name: " + photoName);
+        curPurchaseDate.setText("Purchase Date: " + date);
+        curReceiptPhotoName.setText("Receipt Photo Name: " + receipt);
+
+        if (!curAssetName.isEmpty()) {
+            curCost.setText("Cost: $" + cost);
+            curWarrantyLength.setText("Warranty Length: " + warrantyLength + " years");
+        } else {
+            curCost.setText("Cost: " + cost);
+            curWarrantyLength.setText("Warranty Length: " + warrantyLength);
+        }
+    }
+
+
+
+    /*
+     * Private helper method takes in the name of an asset to be deleted, and removes
+     * it from our database, itemNames, and assetMap. Assumes that the named asset exists.
+     */
+    private void deleteAsset(String assetName, Spinner sp) {
+        String deleteStr = "DELETE FROM assets WHERE itemName='" + assetName + "';";
+        singleton.getDB().execSQL(deleteStr);
+
+        itemNames.remove(assetName);
+        assetMap.remove(assetName);
+
+        connectSpinnerToList();
+    }
+
+    /*
+     * Public method called when the user clicks the delete button. If there's an item selected
+     * in the spinner, handles deletion by removing the item from our database, removing
+     * the item from assetMap and itemNames, and updating the UI.
+     */
+    public void deleteClicked(View view) {
+
+        Spinner sp = findViewById(R.id.item_name_spinner);
+
+        if (sp.getSelectedItem() == null) {
+            Toast invalidToast = Toast.makeText(getApplicationContext(), "No item selected to delete.", Toast.LENGTH_SHORT);
+            invalidToast.show();
+
+        } else { // fastest to handle all deletions individually, rather than deleting from other db or data structures then syncing
+
+            String assetName = sp.getSelectedItem().toString();
+            deleteAsset(assetName, sp);
+            updateDisplayText("");
+        }
 
     }
 

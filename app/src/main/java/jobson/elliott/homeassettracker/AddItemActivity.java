@@ -126,8 +126,6 @@ public class AddItemActivity extends AppCompatActivity {
                 + "','" +  itemInfo.get(Asset.RECEIPT_PHOTO_NAME)
                 + "'," + Float.parseFloat(itemInfo.get(Asset.WARRANTY_LENGTH)) + ");";
 
-        System.out.println("db string (add): " + ret);
-
         return ret;
     }
 
@@ -147,7 +145,6 @@ public class AddItemActivity extends AppCompatActivity {
 
         String insertString = constructDBInsertString(itemInfo);
         singleton.getDB().execSQL(insertString);
-        singleton.setAssetsModified(true);
 
     }
 
@@ -156,7 +153,7 @@ public class AddItemActivity extends AppCompatActivity {
      * Button handler. Checks user-inputted fields for item validity.
      * Adds item if all fields have been filled out and item otherwise valid (TODO: determine what this means).
      */
-    public void addItemClicked(View view) {
+    public void saveItemClicked(View view) {
 
         ArrayList<String> itemInfo = getItemInfo();
 

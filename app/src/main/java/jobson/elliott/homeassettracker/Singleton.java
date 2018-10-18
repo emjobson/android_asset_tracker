@@ -14,19 +14,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class Singleton {
 
-
     private static Singleton instance;
 
     private SQLiteDatabase db;
-    private String item;
-    private String purchaseDate; // ddmmyyyy
-    private boolean assetsModified;
 
-    private Singleton() { // private to avoid client use of contructor
-
-        db = null; // TODO: might init db here
-        item = null; // TODO: necessary?
-        assetsModified = false;
+    private Singleton() {
+        db = null;
     }
 
     // lazy init, not thread safe
@@ -44,11 +37,5 @@ public class Singleton {
         this.db = db;
     }
 
-
-    public String getPurchaseDate() { return this.purchaseDate; }
-    public void setPurchaseDate(String date) { this.purchaseDate = date; }
-
-    public boolean areAssetsModified() { return this.assetsModified; }
-    public void setAssetsModified(boolean bool) { this.assetsModified = bool; }
 
 }
