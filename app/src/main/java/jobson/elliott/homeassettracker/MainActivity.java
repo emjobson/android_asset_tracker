@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         if (tablesCursor.getCount() == 0) {
             resetAssetTable();
         }
-
     }
 
     private void resetAssetTable() {
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupAssetTable() {
         String setupStr = "CREATE TABLE assets ("
-                + "itemName TEXT, description TEXT, cost REAL, "
+                + "itemName TEXT PRIMARY KEY, description TEXT, cost REAL, "
                 + "purchaseDate TEXT, photoName TEXT, receiptPhotoName TEXT, "
                 + "warrantyLength REAL);";
         singleton.getDB().execSQL(setupStr);

@@ -92,6 +92,29 @@ public class AddItemActivity extends AppCompatActivity {
         return ret;
     }
 
+    private boolean dbContainsName(String name) {
+        Cursor c = singleton.getDB().rawQuery(
+                "SELECT * FROM assets;", null);
+
+        try {
+            while (c.moveToNext()) {
+                if (c.getString(Asset.NAME).equals(name)) return true;
+            }
+        } finally {
+            c.close();
+        }
+
+        return false;
+    }
+
+    // Private helper method used by item validation to make sure all fields are fille.d
+    private boolean arrContainsEmptyString(ArrayList<String> arr) {
+        for (String elem : arr) {
+            if (elem.isEmpty()) return true;
+        }
+        return false;
+    }
+
     /*
      * Private helper method determines whether the user input is valid.
      * Returns a String ArrayList of the item information if the user's input is valid,
@@ -104,7 +127,15 @@ public class AddItemActivity extends AppCompatActivity {
     private boolean itemValid(ArrayList<String> itemInfo) {
 
         String name = itemInfo.get(Asset.NAME);
-        if (name == null || name.isEmpty()) {
+
+        if (arrContainsEmptyString(itemInfo)) {
+            Toast invalidToast = Toast.makeText(getApplicationContext(), "Item invalid: one or more fields missing", Toast.LENGTH_SHORT);
+            invalidToast.show();
+            return false;
+
+        } else if (dbContainsName(name)) {
+            Toast invalidToast = Toast.makeText(getApplicationContext(), "Item invalid: can't have duplicate names", Toast.LENGTH_SHORT);
+            invalidToast.show();
             return false;
         }
 
@@ -140,7 +171,7 @@ public class AddItemActivity extends AppCompatActivity {
      */
     private void addItemToDB(ArrayList<String> itemInfo) {
 
-        Toast addToast = Toast.makeText(getApplicationContext(), "Item Added", Toast.LENGTH_SHORT);
+        Toast addToast = Toast.makeText(getApplicationContext(), "Item added", Toast.LENGTH_SHORT);
         addToast.show();
 
         String insertString = constructDBInsertString(itemInfo);
@@ -159,11 +190,6 @@ public class AddItemActivity extends AppCompatActivity {
 
         if (itemValid(itemInfo)) {
             addItemToDB(itemInfo);
-
-        } else {
-            // TODO: make message more specific
-            Toast invalidToast = Toast.makeText(getApplicationContext(), "Item Invalid", Toast.LENGTH_SHORT);
-            invalidToast.show();
         }
     }
 

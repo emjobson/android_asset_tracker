@@ -231,10 +231,11 @@ public class ViewItemActivity extends AppCompatActivity {
 
 
     /*
-     * Private helper method takes in the name of an asset to be deleted, and removes
+     * Private helper method takes in the spinner and removes the currentAsset
      * it from our database, itemNames, and assetMap. Assumes that the named asset exists.
      */
-    private void deleteAsset(String assetName, Spinner sp) {
+    private void deleteAsset(Spinner sp) {
+        String assetName = sp.getSelectedItem().toString();
         String deleteStr = "DELETE FROM assets WHERE itemName='" + assetName + "';";
         singleton.getDB().execSQL(deleteStr);
 
@@ -259,15 +260,9 @@ public class ViewItemActivity extends AppCompatActivity {
 
         } else { // fastest to handle all deletions individually, rather than deleting from other db or data structures then syncing
 
-            String assetName = sp.getSelectedItem().toString();
-            deleteAsset(assetName, sp);
+            deleteAsset(sp);
             updateDisplayText("");
         }
-
-    }
-
-    // TODO: write this
-    public void editCurrentClicked(View view) {
 
     }
 }
