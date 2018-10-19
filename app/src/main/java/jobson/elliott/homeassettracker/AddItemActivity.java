@@ -2,9 +2,6 @@ package jobson.elliott.homeassettracker;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DialogFragment;
-//import android.support.v4.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -14,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -34,16 +30,15 @@ import java.util.ArrayList;
 // much of camera code from top post in:
 
 /*
- * new came code from: https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+ * "new cam code" from: https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
  * saving images in internal storage from: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
  */
-
 
 public class AddItemActivity extends AppCompatActivity {
 
     private Singleton singleton;
     private DatePickerFragment datePicker;
-    private String imgName = "";
+    private String imgName;
 
     // new cam code
     private static final int CAMERA_REQUEST = 1888;
@@ -58,6 +53,7 @@ public class AddItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_item);
 
         singleton = Singleton.getInstance();
+        imgName = ""; //TODO: verify that img resets properly after leaving and returning to page
 
         dateInit();
         cameraInit(); // new cam code
@@ -73,11 +69,9 @@ public class AddItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    System.out.println("aboout to request permissions");
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
 
                 } else {
-                    System.out.println("didn't ask for permission");
                     Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(cameraIntent, CAMERA_REQUEST);
                 }
@@ -296,28 +290,8 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     /*
-     * From: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
-     * Takes in path, loads bitmap from phone's internal memory, and returns bitmap.
-     */
-
-    private Bitmap loadImageFromStorage(String path, String imgName)
-    {
-        try {
-            File f=new File(path, imgName);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            return b;
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    /*
      * Button handler. Checks user-inputted fields for item validity.
-     * Adds item if all fields have been filled out and item otherwise valid (TODO: determine what this means).
+     * Adds item if all fields have been filled out and item otherwise valid
      */
     public void saveItemClicked(View view) {
 
@@ -327,7 +301,26 @@ public class AddItemActivity extends AppCompatActivity {
 
             addItemToDB(itemInfo);
             saveToInternalStorage();
+            resetFields();
         }
+    }
+
+    /*
+     * Private helper method zeros out fields after a successful addition.
+     */
+    private void resetFields() {
+
+        EditText editName = findViewById(R.id.name_id);
+        EditText editDescription = findViewById(R.id.description_id);
+        EditText editCost = findViewById(R.id.cost_id);
+        EditText editWarranty = findViewById(R.id.warranty_length_id);
+
+        editName.setText("");
+        editDescription.setText("");
+        editCost.setText("");
+        editWarranty.setText("");
+
+        imageView.setImageBitmap(null);
     }
 
     /*

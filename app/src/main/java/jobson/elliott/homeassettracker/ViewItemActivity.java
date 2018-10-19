@@ -1,27 +1,38 @@
 package jobson.elliott.homeassettracker;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewItemActivity extends AppCompatActivity {
 
     private Singleton singleton;
-
+    private static final String IMG_DIR = "imageDir";
     private ArrayList<String> itemNames;
     private Spinner itemSpinner;
     private HashMap<String, Asset> assetMap;
+    private boolean TEXT_VERSION = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +151,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    displayClickedTextVersion();
+                displayClicked();
             }
 
             @Override
@@ -162,12 +173,8 @@ public class ViewItemActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /*
-     * Private helper method for testing. Assumes that our "view assets" page currently
-     * displays assets as text, rather than with a custom view. Simply prints the info
-     * for the current asset.
-     */
-    private void displayClickedTextVersion() {
+
+    private void displayClicked() {
 
         Spinner sp = findViewById(R.id.item_name_spinner);
 
@@ -178,7 +185,8 @@ public class ViewItemActivity extends AppCompatActivity {
 
         } else {
             String curAssetName = sp.getSelectedItem().toString();
-            updateDisplayText(curAssetName);
+        //    updateDisplayText(curAssetName);
+            updateDisplayImage(curAssetName);
         }
     }
 
@@ -188,6 +196,67 @@ public class ViewItemActivity extends AppCompatActivity {
      *
      * Inputting the empty string will trigger the default, empty display.
      */
+    private void updateDisplayImage(String assetName) {
+
+        String name, description, date, cost, warrantyLength;
+        name = description = date = cost = warrantyLength = "";
+
+
+        // TODO: grab background from drawables
+        /*
+        Drawable myDrawable = getResources().getDrawable(R.drawable.ic_launcher_background);
+        Bitmap photo = ((BitmapDrawable) myDrawable).getBitmap();
+        */
+    //    Bitmap photo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_background);
+        Bitmap photo = null;
+
+        TextView curItem = findViewById(R.id.curItem);
+        TextView curDescription = findViewById(R.id.curDescription);
+        TextView curPurchaseDate = findViewById(R.id.curPurchaseDate);
+        TextView curCost = findViewById(R.id.curCost);
+        TextView curWarrantyLength = findViewById(R.id.curWarrantyLength);
+        ImageView imgView = findViewById(R.id.imageView);
+
+        if (!assetName.isEmpty()) {
+
+            Asset asset = assetMap.get(assetName);
+            name = asset.getName();
+            description = asset.getDescription();
+            date = DatePickerFragment.addDateSeparators(asset.getPurchaseDate(), "/");
+            cost = Float.toString(asset.getCost());
+            warrantyLength = Float.toString(asset.getWarrantyLength());
+
+            // get bitmap for our asset
+            String selectStr = "SELECT * FROM assets WHERE itemName='" + name + "';";
+            Cursor c = singleton.getDB().rawQuery(selectStr, null);
+            c.moveToFirst();
+            String imgName = c.getString(Asset.PHOTO_NAME);
+            photo = loadImageFromStorage(imgName);
+        }
+
+        curItem.setText("Item: " + name);
+        curDescription.setText("Description: " + description);
+        curPurchaseDate.setText("Purchase Date: " + date);
+        imgView.setImageBitmap(photo);
+
+        if (!assetName.isEmpty()) {
+            curCost.setText("Cost: $" + cost);
+            curWarrantyLength.setText("Warranty Length: " + warrantyLength + " years");
+        } else {
+            curCost.setText("Cost: " + cost);
+            curWarrantyLength.setText("Warranty Length: " + warrantyLength);
+        }
+
+    }
+
+    /*
+     * Private helper called when there's an asset selected and we need to update the UI's text
+     * display. Takes in the current asset's name and updates the display.
+     *
+     * Inputting the empty string will trigger the default, empty display.
+     * Commented out instead of deleted because it relies on XML that is only present during testing.
+     */
+    /*
     private void updateDisplayText(String curAssetName) {
 
         String name, description, photoName, date, cost, warrantyLength;
@@ -224,7 +293,30 @@ public class ViewItemActivity extends AppCompatActivity {
             curWarrantyLength.setText("Warranty Length: " + warrantyLength);
         }
     }
+    */
 
+
+        /*
+     * From: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+     * Takes in path, loads bitmap from phone's internal memory, and returns bitmap.
+     */
+
+    private Bitmap loadImageFromStorage(String imgName) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir(IMG_DIR, Context.MODE_PRIVATE);
+
+        try {
+            File f = new File(directory, imgName);
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            return b;
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     /*
@@ -258,7 +350,8 @@ public class ViewItemActivity extends AppCompatActivity {
         } else { // fastest to handle all deletions individually, rather than deleting from other db or data structures then syncing
 
             deleteAsset(sp);
-            updateDisplayText("");
+        //    updateDisplayText("");
+            updateDisplayImage("");
         }
 
     }

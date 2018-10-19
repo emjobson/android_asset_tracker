@@ -12,8 +12,6 @@ import android.widget.SpinnerAdapter;
 import android.widget.ArrayAdapter;
 import android.content.Intent;
 
-
-
 public class MainActivity extends AppCompatActivity {
 
     private Singleton singleton;
