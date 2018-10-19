@@ -9,32 +9,49 @@
     tools:context="jobson.elliott.homeassettracker.MainActivity">
 
     <TextView
-        android:text="Main Page"
+        android:text="Welcome!"
         android:textSize="24sp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         />
 
-    <Button
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_launcher_background"
+        />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Add Item"
-        android:onClick="addItemScreen"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Item"
+            android:onClick="addItemScreen"/>
 
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="View Items"
-        android:onClick="viewItemScreen"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="View Items"
+            android:onClick="viewItemScreen"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Reset"
-        android:onClick="resetButtonClicked"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reset (test)"
+            android:onClick="resetButtonClicked"/>
+
+    </LinearLayout>
+
+
 
 </LinearLayout>

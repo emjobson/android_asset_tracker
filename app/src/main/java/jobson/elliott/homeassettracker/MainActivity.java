@@ -18,8 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Singleton singleton;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
