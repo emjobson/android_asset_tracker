@@ -52,7 +52,7 @@ public class DatePickerFragment extends DialogFragment
         String monthStr = Integer.toString(month+1); // months were 0-indexed
         monthStr = monthStr.length() == 1 ? "0" + monthStr : monthStr;
         String dayStr = Integer.toString(day);
-        dayStr = dayStr.length() == 1 ? "0" + dayStr : dayStr;
+        dayStr = dayStr.length() == 1 ? "0" + dayStr : dayStr; // TODO: day sometimes 1 ahead (not sure where calendar synced to)
         String yearStr = Integer.toString(year); // assuming length of all years is 4
         String date = monthStr + dayStr + yearStr;
 

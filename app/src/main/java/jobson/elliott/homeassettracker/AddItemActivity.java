@@ -1,23 +1,55 @@
 package jobson.elliott.homeassettracker;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DialogFragment;
 //import android.support.v4.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+
+// much of camera code from top post in:
+
+/*
+ * new came code from: https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+ * saving images in internal storage from: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+ */
+
 
 public class AddItemActivity extends AppCompatActivity {
 
     private Singleton singleton;
     private DatePickerFragment datePicker;
+    private String imgName = "";
+
+    // new cam code
+    private static final int CAMERA_REQUEST = 1888;
+    private ImageView imageView;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private static final String IMG_DIR = "imageDir";
 
 
     @Override
@@ -26,9 +58,62 @@ public class AddItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_item);
 
         singleton = Singleton.getInstance();
-        // upon opening page, zero out purchase date
-    //    singleton.setPurchaseDate("");
+
         dateInit();
+        cameraInit(); // new cam code
+
+    }
+
+    // new cam code
+    private void cameraInit() {
+        this.imageView = (ImageView)this.findViewById(R.id.imageView1);
+        Button photoButton = (Button) this.findViewById(R.id.button1);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("aboout to request permissions");
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+
+                } else {
+                    System.out.println("didn't ask for permission");
+                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+            }
+        });
+    }
+
+    //new cam code
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                Intent cameraIntent = new
+                        Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // new cam code
+    /*
+     * After taking photo, sets the bitmap of our imageView and saves the name of the image.
+     * The name will be used to store the bitmap in the phone's internal memory.
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+            imgName = Asset.getNextImgName();
+            imageView.invalidate();
+
+        }
     }
 
     /*
@@ -66,8 +151,7 @@ public class AddItemActivity extends AppCompatActivity {
         EditText editName = findViewById(R.id.name_id);
         EditText editDescription = findViewById(R.id.description_id);
         EditText editCost = findViewById(R.id.cost_id);
-        EditText editPhotoName = findViewById(R.id.photo_name_id);
-        EditText editReceipt = findViewById(R.id.receipt_photo_name_id);
+    //    EditText editPhotoName = findViewById(R.id.photo_name_id);
         EditText editWarranty = findViewById(R.id.warranty_length_id);
 
         String name = editName.getText().toString();
@@ -77,16 +161,14 @@ public class AddItemActivity extends AppCompatActivity {
     //    String purchaseDate = singleton.getPurchaseDate();
         String purchaseDate = datePicker.getDate();
 
-        String photoName = editPhotoName.getText().toString();
-        String receiptPhotoName = editReceipt.getText().toString();
+    //    String photoName = editPhotoName.getText().toString();
         String warrantyLength = editWarranty.getText().toString();
 
         ret.add(name);
         ret.add(description);
         ret.add(cost);
         ret.add(purchaseDate);
-        ret.add(photoName);
-        ret.add(receiptPhotoName);
+        ret.add(imgName);
         ret.add(warrantyLength);
 
         return ret;
@@ -154,7 +236,6 @@ public class AddItemActivity extends AppCompatActivity {
                 + "'," + Float.parseFloat(itemInfo.get(Asset.COST))
                 + ",'" + itemInfo.get(Asset.PURCHASE_DATE)
                 + "','" + itemInfo.get(Asset.PHOTO_NAME)
-                + "','" +  itemInfo.get(Asset.RECEIPT_PHOTO_NAME)
                 + "'," + Float.parseFloat(itemInfo.get(Asset.WARRANTY_LENGTH)) + ");";
 
         return ret;
@@ -176,7 +257,61 @@ public class AddItemActivity extends AppCompatActivity {
 
         String insertString = constructDBInsertString(itemInfo);
         singleton.getDB().execSQL(insertString);
+    }
 
+    /*
+     * From: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+     * Saves the bitmap associated with imageView internally, and returns the absolute path.
+     * Also uses the imgName ivar to specify the full path.
+     *
+     * Assumes that imgName is set to a valid name and that the Bitmap exists.
+     */
+    private String saveToInternalStorage(){
+
+        imageView.invalidate(); // <---- TODO: not sure we need this line
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmapImage = drawable.getBitmap();
+
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir(IMG_DIR, Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory, imgName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    /*
+     * From: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+     * Takes in path, loads bitmap from phone's internal memory, and returns bitmap.
+     */
+
+    private Bitmap loadImageFromStorage(String path, String imgName)
+    {
+        try {
+            File f=new File(path, imgName);
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            return b;
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -189,7 +324,9 @@ public class AddItemActivity extends AppCompatActivity {
         ArrayList<String> itemInfo = getItemInfo();
 
         if (itemValid(itemInfo)) {
+
             addItemToDB(itemInfo);
+            saveToInternalStorage();
         }
     }
 
@@ -200,4 +337,6 @@ public class AddItemActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+
 }

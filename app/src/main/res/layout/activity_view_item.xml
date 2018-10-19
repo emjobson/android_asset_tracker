@@ -68,13 +68,6 @@
         android:text="Purchase Date: "
         android:textSize="20sp"/>
 
-    <TextView
-        android:id="@+id/curReceiptPhotoName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Receipt Photo Name: "
-        android:textSize="20sp"/>
-
 
     <TextView
         android:id="@+id/curCost"

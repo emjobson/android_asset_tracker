@@ -12,68 +12,100 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Item Information:"
+        android:gravity="center"
         android:textSize="24sp"/>
-
-    <EditText
-        android:id="@+id/name_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name"/>
-
-    <EditText
-        android:id="@+id/description_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description"/>
-
-    <EditText
-        android:id="@+id/cost_id"
-        android:inputType="numberDecimal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Cost"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Item Purchase Date"
-            android:textSize="14sp"
-            android:onClick="showDatePickerDialog"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date Chosen: None"
-            android:id="@+id/date_id"
-            />
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/name_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:textSize="16sp"/>
+
+            <EditText
+                android:id="@+id/description_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:textSize="16sp"/>
+
+            <EditText
+                android:id="@+id/cost_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:hint="Cost"
+                android:textSize="16sp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item Purchase Date"
+                android:onClick="showDatePickerDialog" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date Chosen: None"
+                android:id="@+id/date_id" />
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Take Photo"
+                />
+
+            <EditText
+                android:id="@+id/warranty_length_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:hint="Warranty Length (years)"
+                android:textSize="16sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:src="@drawable/ic_launcher_background"
+                />
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
-    <EditText
-        android:id="@+id/photo_name_id"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Photo Name"
-    />
-
-    <EditText
-        android:id="@+id/receipt_photo_name_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Receipt Photo Name"
-        />
-    
-    <EditText
-        android:id="@+id/warranty_length_id"
-        android:inputType="numberDecimal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Warranty Length (years)"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <Button
         android:layout_width="match_parent"

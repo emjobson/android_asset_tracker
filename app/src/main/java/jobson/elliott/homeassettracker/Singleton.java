@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
  * Singleton info:
  * https://cocoacasts.com/are-singletons-bad
  * https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples
- *
  */
 
 

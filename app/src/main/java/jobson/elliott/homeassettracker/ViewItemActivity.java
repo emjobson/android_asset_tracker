@@ -190,14 +190,13 @@ public class ViewItemActivity extends AppCompatActivity {
      */
     private void updateDisplayText(String curAssetName) {
 
-        String name, description, photoName, date, receipt, cost, warrantyLength;
-        name = description = photoName = date = receipt = cost = warrantyLength = "";
+        String name, description, photoName, date, cost, warrantyLength;
+        name = description = photoName = date = cost = warrantyLength = "";
 
         TextView curItem = findViewById(R.id.curItem);
         TextView curDescription = findViewById(R.id.curDescription);
         TextView curPhotoName = findViewById(R.id.curPhotoName);
         TextView curPurchaseDate = findViewById(R.id.curPurchaseDate);
-        TextView curReceiptPhotoName = findViewById(R.id.curReceiptPhotoName);
         TextView curCost = findViewById(R.id.curCost);
         TextView curWarrantyLength = findViewById(R.id.curWarrantyLength);
 
@@ -208,7 +207,6 @@ public class ViewItemActivity extends AppCompatActivity {
             description = asset.getDescription();
             photoName = asset.getPhotoName();
             date = DatePickerFragment.addDateSeparators(asset.getPurchaseDate(), "/");
-            receipt = asset.getReceiptPhotoName();
             cost = Float.toString(asset.getCost());
             warrantyLength = Float.toString(asset.getWarrantyLength());
         }
@@ -217,7 +215,6 @@ public class ViewItemActivity extends AppCompatActivity {
         curDescription.setText("Description: " + description);
         curPhotoName.setText("Photo Name: " + photoName);
         curPurchaseDate.setText("Purchase Date: " + date);
-        curReceiptPhotoName.setText("Receipt Photo Name: " + receipt);
 
         if (!curAssetName.isEmpty()) {
             curCost.setText("Cost: $" + cost);

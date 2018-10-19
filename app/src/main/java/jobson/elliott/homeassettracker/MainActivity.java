@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupAssetTable() {
         String setupStr = "CREATE TABLE assets ("
                 + "itemName TEXT PRIMARY KEY, description TEXT, cost REAL, "
-                + "purchaseDate TEXT, photoName TEXT, receiptPhotoName TEXT, "
+                + "purchaseDate TEXT, photoName TEXT, "
                 + "warrantyLength REAL);";
         singleton.getDB().execSQL(setupStr);
     }
